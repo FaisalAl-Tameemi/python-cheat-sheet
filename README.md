@@ -319,6 +319,90 @@ dd_pair[2][1] = 1 # now dd_pair contains {2: [0,1]}
 
 ## Counter
 
-A Counter turns a sequence of values into a defaultdict(int)-like object mapping keys to counts.
+
+A Counter turns a sequence of values into a defaultdict(int) like object mapping keys to counts.
 
 **Widely used to create histograms.**
+
+
+----
+
+
+## Sets
+
+
+Another data structure is set, which represents a collection of distinct elements:
+
+
+```python
+s = set() # s is now { 1 }
+s.add(1) # s is now { 1, 2 }
+s.add(2) # s is still { 1, 2 }
+s.add(2) # equals 2
+x = len(s)
+y = 2 in s # equals True
+z = 3 in s # equals False
+```
+
+----
+
+
+## Control Flow
+
+
+```python
+if 1 > 2:
+	message = "if only 1 were greater than two..."
+elif 1 > 3:
+	message = "elif stands for 'else if'"
+else:
+	message = "when all else fails use else (if you want to)"
+```
+
+Or with ternary
+
+```python
+parity = "even" if x % 2 == 0 else "odd"
+```
+
+Or `continue` and `break`:
+
+```python
+for x in range(10):
+	if x == 3:
+		continue # go immediately to the next iteration
+	if x == 5:
+break # quit the loop entirely print x
+```
+
+----
+
+
+In python, `nil` or `null` is denoted as `None`.
+
+
+----
+
+
+Let's say we wanted to read a value based on a condition:
+
+```python
+s = some_function_that_returns_a_string()
+if s:
+	first_char = s[0]
+else:
+	first_char = ""
+```
+
+A simpler way to do this is as follows:
+
+```python
+first_char = s and s[0]
+```
+
+```python
+safe_x = x or 0
+```
+
+
+----
