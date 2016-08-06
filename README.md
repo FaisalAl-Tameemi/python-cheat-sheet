@@ -406,3 +406,378 @@ safe_x = x or 0
 
 
 ----
+
+
+## Sorting
+
+
+```python
+x = [4,1,2,3]
+y = sorted(x) # is [1,2,3,4], x is unchanged
+x.sort() # now x is [1,2,3,4]
+```
+
+To sort lists in custom ways:
+
+```python
+# sort the list by absolute value from largest to smallest
+x = sorted([-4,1,-2,3], key=abs, reverse=True) # is [-4,3,-2,1]
+
+# sort the words and counts from highest count to lowest
+wc = sorted(word_counts.items(),
+					 key=lambda (word, count): count,
+					 reverse=True)
+```
+
+
+----
+
+
+## List Comprehensions
+
+We do this when we want to transform a list into another list:
+
+```python
+even_numbers = [x for x in range(5) if x % 2 == 0] squares = [x * x for x in range(5)] even_squares = [x * x for x in even_numbers]
+```
+
+
+You can also turn a **list into a dict** this way:
+
+```python
+square_dict = { x : x * x for x in range(5) }
+square_set = { x * x for x in [1, -1] }
+```
+
+
+If you don't need the variable from the list, use an `_`:
+
+```python
+zeroes = [0 for _ in even_numbers] # has the same length as even_numbers
+```
+
+
+You can **include multiple `for`s**:
+
+```python
+pairs = [(x, y)
+				for x in range(10)
+				for y in range(10)] # 100 pairs (0,0) (0,1) ... (9,8), (9,9)
+```
+
+
+In later `for`s, you can use the results of earlier ones:
+
+```python
+increasing_pairs = [(x, y)
+										for x in range(10)
+										for y in range(x + 1, 10)]
+```
+
+
+----
+
+
+## Generators
+
+A generator is something that you can iterate over (for us, usually using for) but whose values are produced only as needed (lazily).
+
+
+```python
+def lazy_range(n):
+	"""a lazy version of range"""
+	i=0
+	while i < n:
+		yield i
+		i += 1
+
+# to use the lazy range..
+for i in lazy_range(10):
+	do_something_with(i)
+```
+
+----
+
+
+## Randomness
+
+
+```python
+import random
+four_uniform_randoms = [random.random() for _ in range(4)]
+#  [0.8444218515250481,    # random.random() produces numbers
+#   0.7579544029403025,    # uniformly between 0 and 1
+#   0.420571580830845,     # it's the random function we'll use
+#   0.25891675029296335]   # most often
+```
+
+___Note:___ The random module actually produces pseudorandom (that is, deterministic) numbers based on an internal state that you can set with random.seed if you want to get reproducible results:
+
+```python
+random.seed(10)        # set the seed to 10
+print random.random()  # 0.57140259469
+random.seed(10)        # reset the seed to 10
+print random.random()  # 0.57140259469 again
+```
+
+
+To __pick a number randomly from a range__:
+
+```python
+random.randrange(10) # choose randomly from range(10) = [0, 1, ..., 9]
+random.randrange(3, 6) # choose randomly from range(3, 6) = [3, 4, 5]
+```
+
+
+To __shuffle__ a list of of items __randomly__:
+
+```python
+up_to_ten = range(10)
+random.shuffle(up_to_ten)
+print up_to_ten
+# [2, 5, 1, 9, 7, 3, 8, 6, 4, 0] (your results will probably be different)
+```
+
+
+To __randomly pick__ an element from a list:
+
+```python
+my_best_friend = random.choice(["Alice", "Bob", "Charlie"]) # "Bob" for me
+```
+
+
+And if you need to randomly choose a sample of elements _without replacement_ (i.e., with no duplicates), you can use random.sample:
+
+```python
+lottery_numbers = range(60)
+winning_numbers = random.sample(lottery_numbers, 6) # [16, 36, 10, 6, 25, 9]
+```
+
+
+To choose a sample of elements _with replacement_ (i.e., allowing duplicates), you can just make multiple calls to `random.choice`:
+
+```python
+four_with_replacement = [random.choice(range(10)) for _ in range(4)] # [9, 4, 4, 2]
+```
+
+
+----
+
+## Regular Expressions
+
+
+```python
+print all([															 # all of these are true, because
+	not re.match("a", "cat"),							 # * 'cat' doesn't start with 'a'
+	re.search("a", "cat"),								 # * 'cat' has an 'a' in it
+	not re.search("c", "dog"),						 # * 'dog' doesn't have a 'c' in it
+	3 == len(re.split("[ab]", "carbs")),   # * split on a or b to ['c','r','s']
+	"R-D-" == re.sub("[0-9]", "-", "R2D2") # * replace digits with dashes
+]) # prints True
+```
+
+
+----
+
+
+## Object-Oriented Programming
+
+
+Imagine we didn’t have the built-in Python set. Then we might want to create our own Set class.
+
+```python
+# by convention, we give classes PascalCase names
+class Set:
+	# these are the member functions
+	# every one takes a first parameter "self" (another convention)
+	# that refers to the particular Set object being used
+	def __init__(self, values=None):
+		self.dict = {}    # each instance of Set has its own dict property
+											# which is what we'll use to track memberships
+		if values is not None:
+			for value in values:
+				self.add(value)
+
+	def __repr__(self):
+		"""this is the string representation of a Set object
+		if you type it at the Python prompt or pass it to str()"""
+		return "Set: " + str(self.dict.keys())
+
+	# we'll represent membership by being a key in self.dict with value True
+	def add(self, value):
+		self.dict[value] = True
+
+	# value is in the Set if it's a key in the dictionary				
+	def contains(self, value):
+		return value in self.dict
+
+	def remove(self, value):
+		del self.dict[value]
+```
+
+Which we would then use like this:
+
+```python
+s = Set([1,2,3])
+s.add(4)
+print s.contains(4)
+s.remove(3)
+print s.contains(3)
+```
+
+----
+
+
+## Functional Tools
+
+
+When passing functions around, sometimes we’ll want to partially apply (or curry) functions to create new functions. As a simple example, imagine that we have a function of two variables:
+
+```python
+def exp(base, power):
+	return base ** power
+
+# We can, of course, do this with def, but this can sometimes get unwieldy:
+
+def two_to_the(power):
+	return exp(2, power)
+```
+
+
+It's a better approach to use `functools.partial`:
+
+
+```python
+from functools import partial
+two_to_the = partial(exp, 2) 	# is now a function of one variable
+print two_to_the(3) 					# 8
+```
+
+You can also use partial to fill in later arguments if you specify their names:
+
+```python
+square_of = partial(exp, power=2)
+print square_of(3)
+```
+
+
+We will also occasionally use `map`, `reduce`, and `filter`, which provide functional alternatives to list comprehensions:
+
+```python
+def double(x):
+	return 2 * x
+
+xs = [1,2,3,4]
+twice_xs = [double(x) for x in xs] 	# [2, 4, 6, 8]
+twice_xs = map(double, xs) 					# [2, 4, 6, 8]
+list_doubler = partial(map, double)
+twice_xs = list_doubler(xs)					# [2, 4, 6, 8]
+# they all give the same result
+```
+
+
+You can use map with multiple-argument functions if you provide multiple lists:
+
+```python
+def multiply(x, y):
+	return x * y
+products = map(multiply, [1, 2], [4, 5]) # [1 * 4, 2 * 5] = [4, 10]
+```
+
+
+Similarly with `filter`...
+
+```python
+def is_even(x):
+	"""True if x is even, False if x is odd"""
+	return x % 2 == 0
+
+x_evens = [x for x in xs if is_even(x)] # [2, 4]
+x_evens = filter(is_even, xs)						# [2, 4]
+list_evener = partial(filter, is_even)  # [2, 4]
+x_evens = list_evener(xs)
+```
+
+----
+
+
+## Enumerate
+
+
+```python
+# not Pythonic
+for i in range(len(documents)):
+	document = documents[i]
+	do_something(i, document)
+
+# also not Pythonic
+i=0
+for document in documents:
+	do_something(i, document)
+	i+=1
+```
+
+
+The Pythonic solution is `enumerate`, which produces tuples (index, element):
+
+
+```python
+for i, document in enumerate(documents):
+	do_something(i, document)
+```
+
+
+Similarly, if we just want the indexes:
+
+```python
+for i in range(len(documents)): do_something(i)    # not Pythonic
+for i, _ in enumerate(documents): do_something(i)  # Pythonic
+```
+
+----
+
+
+## `zip` and Argument Unpacking
+
+
+```python
+list1 = ['a', 'b', 'c']
+list2 = [1, 2, 3]
+zip(list1, list2) # is [('a', 1), ('b', 2), ('c', 3)]
+```
+
+**To `unzip`**:
+
+```python
+pairs = [('a', 1), ('b', 2), ('c', 3)]
+letters, numbers = zip(*pairs)  # returns [('a','b','c'), ('1','2','3')]
+```
+
+
+----
+
+
+## `args` and `kwargs`
+
+```python
+def magic(*args, **kwargs): print "unnamed args:", args print "keyword args:", kwargs
+    magic(1, 2, key="word", key2="word2")
+    # prints
+    #  unnamed args: (1, 2)
+    #  keyword args: {'key2': 'word2', 'key': 'word'}
+```
+
+
+Doubler implemented the correct way:
+
+```python
+def doubler_correct(f):
+	"""works no matter what kind of inputs f expects"""
+	def g(*args, **kwargs):
+  	"""whatever arguments g is supplied, pass them through to f"""
+		return 2 * f(*args, **kwargs)
+	return g
+
+g = doubler_correct(f2)
+	print g(1, 2) # 6
+```
